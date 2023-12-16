@@ -26,7 +26,13 @@ app.get('/api/persons', (request, response) => {
 app.get('/info', (request, response) => {
     const timestamp = new Date().toString();
     response.send(`<p>phonebook has data for ${Person.length} people</p> <p>${timestamp}</p>`)
-})
+});
+
+app.get('/api/persons/:id', (request, response) => {
+  Person.findById(request.params.id).then(person => {
+    response.json(person)
+  })
+});
 
 app.post('/api/persons', (request, response) => {
   const body = request.body
