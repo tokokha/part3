@@ -1,10 +1,20 @@
 const express = require('express')
+const app = express()
 var morgan = require('morgan')
+const cors = require('cors')
+
 const Person = require('./modules/person')
 
-const app = express()
+const errorHandler = (error,request, response, next) => {
+  console.error(error.message)
 
-const cors = require('cors')
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error:'malformatted id' })
+  }
+  
+  next(error)
+}
+
 app.use(cors())
 app.use(express.static('dist'))
 app.use(express.json())
@@ -17,10 +27,7 @@ app.get('/api/persons', (request, response) => {
       .then(people => {
           response.json(people);
       })
-      .catch(error => {
-          console.error("Error fetching data:", error.message);
-          response.status(500).json({ error: 'Internal Server Error' });
-      });
+      .catch(error => next(error))
 });
 
 app.get('/info', (request, response) => {
@@ -59,6 +66,7 @@ app.delete('/api/persons/:id', (request, response) => {
     })
 })
 
+app.use(errorHandler)
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
