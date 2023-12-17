@@ -41,7 +41,6 @@ app.post('/api/persons', (request, response) => {
       error: 'name or number missing' 
     })
   }
-  
   const person = new Person({
     name: body.name,
     number: body.number,
@@ -51,6 +50,15 @@ app.post('/api/persons', (request, response) => {
     response.json(savedPerson)
   })
 })
+  
+app.delete('/api/persons/:id', (request, response) => {
+  Person.findByIdAndDelete(request.params.id)
+    .then(result => {
+      response.status(204).end()
+      console.log(request.params.id)
+    })
+})
+
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
